@@ -70,24 +70,25 @@ let invalidate_sheet () =
 (* à faire : le cœur du programme *)
 let rec eval_form fo = match fo with
   | Cst n -> n
-  | Cell (p,q) -> eval_cell (thesheet.(p).(q))
+  | Cell (p,q) -> eval_cell p q
   | Op(o,fs) -> match o, fs with
                   | S, [] -> 0.
-                  | S, t::q -> (eval_form t) +. (S (eval_form q))
+                  | S, t::q -> (eval_form t) +. (eval_form (Op(S, q)))
                   | M, [] -> 1.
-                  | M, t::q -> (eval_form t) *. (M (eval_form q))
-                  | A, [] -> 0
+                  | M, t::q -> (eval_form t) *. (eval_form (Op(M, q)))
+                  | A, [] -> 0.
                   | A, l -> let n = float_of_int (List.length l)
-                            in let avg n a l = match l with
+                            in let rec avg n a l = match l with
                               | [] -> a /. n
                               | t::q -> avg n (a +. (eval_form t)) q
-                            in List.fold_left (avg n) l
+                            in (avg n) 0. l
 
 (* ici un "and", car eval_formula et eval_cell sont a priori
    deux fonctions mutuellement récursives *)
 and eval_cell i j =
-  thesheet.(i).(j).(value) <- eval_form (thesheet.(i).(j).(formula)) ;
-  thesheet.(i).(j).(value)
+  let f = eval_form (thesheet.(i).(j).formula) in
+  thesheet.(i).(j).value <- Some(f) ;
+  f
 
 let recompute_sheet () =
   invalidate_sheet ();

@@ -4,7 +4,7 @@ open Sheet
 
 (* commandes: ce que l'utilisateur peut saisir dans un fichier.
  - La modification d'une cellule avec une nouvelle formule,
- - l'affichage d'une cellule, 
+ - l'affichage d'une cellule,
  - l'affichage de toute la feuille *)
 type comm = Upd of cellname * form | Show of cellname | ShowAll
 
@@ -14,17 +14,17 @@ let show_comm c =
   match c with
   | Upd (c,f) ->
      begin
-       ps (cell_name2string c);
-       ps"=";
+       print_string (cell_name2string c);
+       print_string "=";
        show_form f
      end
   | Show c ->
      begin
-       ps "Show(";
-       ps (cell_name2string c);
-       ps ")"
+       print_string "Show(";
+       print_string (cell_name2string c);
+       print_string ")"
      end
-  | ShowAll -> ps "ShowAll"
+  | ShowAll -> print_string "ShowAll"
 
 (************ faire tourner les commandes **************)
 
@@ -38,7 +38,7 @@ let run_command c = match c with
            "Showing cell "
            ^ cell_name2string cn
          );
-       ps (cell_val2string (read_cell co)); (* <- ici ps, et pas p_debug, car on veut afficher au moins cela *)
+       print_string (cell_val2string (read_cell co)); (* <- ici print_string, et pas p_debug, car on veut afficher au moins cela *)
        print_newline()
      end
   | ShowAll ->

@@ -53,8 +53,6 @@ let oper2string = function
   | M -> "MULT"
   | A -> "AVERAGE"
 
-let ps = print_string
-
 let rec list2string f = function
   | [x] -> f x
   | x::xs ->
@@ -68,7 +66,7 @@ let rec show_list f = function
   | x::xs ->
      begin
        f x;
-       ps";";
+       print_string";";
        show_list f xs
      end
   | _ -> failwith "show_list: the list shouldn't be empty"
@@ -81,4 +79,4 @@ let rec form2string = function
        (oper2string o) ^ "(" ^ list2string form2string fl ^ ")"
      end
 
-let rec show_form f = ps (form2string f)
+let rec show_form f = print_string (form2string f)
