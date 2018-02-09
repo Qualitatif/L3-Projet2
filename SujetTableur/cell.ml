@@ -23,7 +23,7 @@ let coord_to_cellname co =
 
 
 (* operations que l'on peut utiliser dans les formules *)
-type oper = S | M | A (* sum, multiply, average *)
+type oper = S | M | A | MAX (* sum, multiply, average maximum*)
 
 (* formules : une valeur, la même valeur qu'une autre cellule, une opération et
  * ses arguments *)

@@ -14,16 +14,17 @@
    8  operand : SUM
    9          | MULT
   10          | AVERAGE
+  11          | MAX
 
-  11  formula : NBR
-  12          | INT
-  13          | cell
-  14          | operand LPAREN forlist RPAREN
+  12  formula : NBR
+  13          | INT
+  14          | cell
+  15          | operand LPAREN forlist RPAREN
 
-  15  forlist : formula
-  16          | formula SEMICOL forlist
+  16  forlist : formula
+  17          | formula SEMICOL forlist
 
-  17  %entry% : '\001' debut
+  18  %entry% : '\001' debut
 
 state 0
 	$accept : . %entry% $end  (0)
@@ -35,7 +36,7 @@ state 0
 
 
 state 1
-	%entry% : '\001' . debut  (17)
+	%entry% : '\001' . debut  (18)
 
 	CELLROW  shift 3
 	SHOW  shift 4
@@ -77,9 +78,9 @@ state 5
 
 
 state 6
-	%entry% : '\001' debut .  (17)
+	%entry% : '\001' debut .  (18)
 
-	.  reduce 17
+	.  reduce 18
 
 
 state 7
@@ -143,23 +144,24 @@ state 14
 	SUM  shift 17
 	MULT  shift 18
 	AVERAGE  shift 19
+	MAX  shift 20
 	.  error
 
-	cell  goto 20
-	formula  goto 21
-	operand  goto 22
+	cell  goto 21
+	formula  goto 22
+	operand  goto 23
 
 
 state 15
-	formula : INT .  (12)
+	formula : INT .  (13)
 
-	.  reduce 12
+	.  reduce 13
 
 
 state 16
-	formula : NBR .  (11)
+	formula : NBR .  (12)
 
-	.  reduce 11
+	.  reduce 12
 
 
 state 17
@@ -181,58 +183,32 @@ state 19
 
 
 state 20
-	formula : cell .  (13)
+	operand : MAX .  (11)
 
-	.  reduce 13
+	.  reduce 11
 
 
 state 21
+	formula : cell .  (14)
+
+	.  reduce 14
+
+
+state 22
 	singlecomm : cell EQUAL formula .  (4)
 
 	.  reduce 4
 
 
-state 22
-	formula : operand . LPAREN forlist RPAREN  (14)
-
-	LPAREN  shift 23
-	.  error
-
-
 state 23
-	formula : operand LPAREN . forlist RPAREN  (14)
+	formula : operand . LPAREN forlist RPAREN  (15)
 
-	INT  shift 15
-	NBR  shift 16
-	CELLROW  shift 3
-	SUM  shift 17
-	MULT  shift 18
-	AVERAGE  shift 19
+	LPAREN  shift 24
 	.  error
-
-	cell  goto 20
-	formula  goto 24
-	operand  goto 22
-	forlist  goto 25
 
 
 state 24
-	forlist : formula .  (15)
-	forlist : formula . SEMICOL forlist  (16)
-
-	SEMICOL  shift 26
-	RPAREN  reduce 15
-
-
-state 25
-	formula : operand LPAREN forlist . RPAREN  (14)
-
-	RPAREN  shift 27
-	.  error
-
-
-state 26
-	forlist : formula SEMICOL . forlist  (16)
+	formula : operand LPAREN . forlist RPAREN  (15)
 
 	INT  shift 15
 	NBR  shift 16
@@ -240,25 +216,59 @@ state 26
 	SUM  shift 17
 	MULT  shift 18
 	AVERAGE  shift 19
+	MAX  shift 20
 	.  error
 
-	cell  goto 20
-	formula  goto 24
-	operand  goto 22
-	forlist  goto 28
+	cell  goto 21
+	formula  goto 25
+	operand  goto 23
+	forlist  goto 26
+
+
+state 25
+	forlist : formula .  (16)
+	forlist : formula . SEMICOL forlist  (17)
+
+	SEMICOL  shift 27
+	RPAREN  reduce 16
+
+
+state 26
+	formula : operand LPAREN forlist . RPAREN  (15)
+
+	RPAREN  shift 28
+	.  error
 
 
 state 27
-	formula : operand LPAREN forlist RPAREN .  (14)
+	forlist : formula SEMICOL . forlist  (17)
 
-	.  reduce 14
+	INT  shift 15
+	NBR  shift 16
+	CELLROW  shift 3
+	SUM  shift 17
+	MULT  shift 18
+	AVERAGE  shift 19
+	MAX  shift 20
+	.  error
+
+	cell  goto 21
+	formula  goto 25
+	operand  goto 23
+	forlist  goto 29
 
 
 state 28
-	forlist : formula SEMICOL forlist .  (16)
+	formula : operand LPAREN forlist RPAREN .  (15)
 
-	.  reduce 16
+	.  reduce 15
 
 
-17 terminals, 9 nonterminals
-18 grammar rules, 29 states
+state 29
+	forlist : formula SEMICOL forlist .  (17)
+
+	.  reduce 17
+
+
+18 terminals, 9 nonterminals
+19 grammar rules, 30 states

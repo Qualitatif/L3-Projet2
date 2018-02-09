@@ -1,4 +1,14 @@
 
+
+
+
+
+
+
+
+
+---------------------------------------------------------------------------
+
 pour compiler, lancer
 make
 dans un terminal (il faut pour cela avoir fait des "cd" pour aller
@@ -41,7 +51,7 @@ Vous remarquerez que l'énumération ci-dessus suit l'architecture du
 programme : on fait "open Cell" dans sheet.ml car on a besoin de faire
 référence à ce qui est défini dans cell.ml (la convention impose de
 majusculer la première lettre), on fait similairement "open Cell" et
-"open Sheet" dans command.ml, etc. 
+"open Sheet" dans command.ml, etc.
 
 
 --- Comment coder ---

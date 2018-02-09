@@ -76,12 +76,17 @@ let rec eval_form fo = match fo with
                   | S, t::q -> (eval_form t) +. (eval_form (Op(S, q)))
                   | M, [] -> 1.
                   | M, t::q -> (eval_form t) *. (eval_form (Op(M, q)))
-                  | A, [] -> 0.
+                  | A, [] -> 0. (* la moyenne *)
                   | A, l -> let n = float_of_int (List.length l)
                             in let rec avg n a l = match l with
                               | [] -> a /. n
                               | t::q -> avg n (a +. (eval_form t)) q
                             in (avg n) 0. l
+                  | MAX, [] -> neg_infinity
+                  | MAX, t::q -> let rec max t q = let t0 = (eval_form t)
+                                  in let t1 = eval_form (Op(MAX, q))
+                      					  in if t0 > t1 then t0 else t1
+                      					  in max t q
 
 (* ici un "and", car eval_formula et eval_cell sont a priori
    deux fonctions mutuellement récursives *)

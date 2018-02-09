@@ -12,6 +12,7 @@ type token =
   | AVERAGE
   | SHOW
   | SHOWALL
+  | MAX
   | EOF
 
 val debut :
