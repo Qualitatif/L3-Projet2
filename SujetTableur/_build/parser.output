@@ -1,0 +1,264 @@
+   0  $accept : %entry% $end
+
+   1  debut : clist EOF
+
+   2  clist : singlecomm clist
+   3        | singlecomm
+
+   4  singlecomm : cell EQUAL formula
+   5             | SHOW cell
+   6             | SHOWALL
+
+   7  cell : CELLROW INT
+
+   8  operand : SUM
+   9          | MULT
+  10          | AVERAGE
+
+  11  formula : NBR
+  12          | INT
+  13          | cell
+  14          | operand LPAREN forlist RPAREN
+
+  15  forlist : formula
+  16          | formula SEMICOL forlist
+
+  17  %entry% : '\001' debut
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . debut  (17)
+
+	CELLROW  shift 3
+	SHOW  shift 4
+	SHOWALL  shift 5
+	.  error
+
+	debut  goto 6
+	clist  goto 7
+	singlecomm  goto 8
+	cell  goto 9
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	cell : CELLROW . INT  (7)
+
+	INT  shift 10
+	.  error
+
+
+state 4
+	singlecomm : SHOW . cell  (5)
+
+	CELLROW  shift 3
+	.  error
+
+	cell  goto 11
+
+
+state 5
+	singlecomm : SHOWALL .  (6)
+
+	.  reduce 6
+
+
+state 6
+	%entry% : '\001' debut .  (17)
+
+	.  reduce 17
+
+
+state 7
+	debut : clist . EOF  (1)
+
+	EOF  shift 12
+	.  error
+
+
+state 8
+	clist : singlecomm . clist  (2)
+	clist : singlecomm .  (3)
+
+	CELLROW  shift 3
+	SHOW  shift 4
+	SHOWALL  shift 5
+	EOF  reduce 3
+
+	clist  goto 13
+	singlecomm  goto 8
+	cell  goto 9
+
+
+state 9
+	singlecomm : cell . EQUAL formula  (4)
+
+	EQUAL  shift 14
+	.  error
+
+
+state 10
+	cell : CELLROW INT .  (7)
+
+	.  reduce 7
+
+
+state 11
+	singlecomm : SHOW cell .  (5)
+
+	.  reduce 5
+
+
+state 12
+	debut : clist EOF .  (1)
+
+	.  reduce 1
+
+
+state 13
+	clist : singlecomm clist .  (2)
+
+	.  reduce 2
+
+
+state 14
+	singlecomm : cell EQUAL . formula  (4)
+
+	INT  shift 15
+	NBR  shift 16
+	CELLROW  shift 3
+	SUM  shift 17
+	MULT  shift 18
+	AVERAGE  shift 19
+	.  error
+
+	cell  goto 20
+	formula  goto 21
+	operand  goto 22
+
+
+state 15
+	formula : INT .  (12)
+
+	.  reduce 12
+
+
+state 16
+	formula : NBR .  (11)
+
+	.  reduce 11
+
+
+state 17
+	operand : SUM .  (8)
+
+	.  reduce 8
+
+
+state 18
+	operand : MULT .  (9)
+
+	.  reduce 9
+
+
+state 19
+	operand : AVERAGE .  (10)
+
+	.  reduce 10
+
+
+state 20
+	formula : cell .  (13)
+
+	.  reduce 13
+
+
+state 21
+	singlecomm : cell EQUAL formula .  (4)
+
+	.  reduce 4
+
+
+state 22
+	formula : operand . LPAREN forlist RPAREN  (14)
+
+	LPAREN  shift 23
+	.  error
+
+
+state 23
+	formula : operand LPAREN . forlist RPAREN  (14)
+
+	INT  shift 15
+	NBR  shift 16
+	CELLROW  shift 3
+	SUM  shift 17
+	MULT  shift 18
+	AVERAGE  shift 19
+	.  error
+
+	cell  goto 20
+	formula  goto 24
+	operand  goto 22
+	forlist  goto 25
+
+
+state 24
+	forlist : formula .  (15)
+	forlist : formula . SEMICOL forlist  (16)
+
+	SEMICOL  shift 26
+	RPAREN  reduce 15
+
+
+state 25
+	formula : operand LPAREN forlist . RPAREN  (14)
+
+	RPAREN  shift 27
+	.  error
+
+
+state 26
+	forlist : formula SEMICOL . forlist  (16)
+
+	INT  shift 15
+	NBR  shift 16
+	CELLROW  shift 3
+	SUM  shift 17
+	MULT  shift 18
+	AVERAGE  shift 19
+	.  error
+
+	cell  goto 20
+	formula  goto 24
+	operand  goto 22
+	forlist  goto 28
+
+
+state 27
+	formula : operand LPAREN forlist RPAREN .  (14)
+
+	.  reduce 14
+
+
+state 28
+	forlist : formula SEMICOL forlist .  (16)
+
+	.  reduce 16
+
+
+17 terminals, 9 nonterminals
+18 grammar rules, 29 states
