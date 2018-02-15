@@ -29,6 +29,9 @@ let sheet_iter f =
  * modifier une case du tableau à l'aide de update_cell_formula, et
  * regarder ce que ça donne sur le tableau : cela devrait vous donner
  * une piste *)
+(* Array.make_matrix creates a matrix whose cells all point toward the same
+content. Thus we must initialise the matrix by creating a different content
+for each cell. *)
 let init_sheet () =
   let init_cell i j =
     let c = { value = None; formula = Cst 0. } in

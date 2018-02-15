@@ -33,11 +33,14 @@ type form = Cst of number | Cell of (int*int) | Op of oper * form list
 (* un type enregistrement
  * "mutable" signifie que l'on pourra modifier le champ
  * type 'a option = None | Some of 'a (ici, 'a c'est number) *)
-type cell = { mutable formula : form; mutable value : number option }
+type cell = { mutable formula : form ;
+              mutable value : number option ;
+              mutable dependencies : cell list }
 
 (* par défaut, une cellule n'a pas de valeur, et la formule
    correspondante est la constante 0. *)
-let default_cell = { formula = Cst 0.; value = None }
+(* No cell depends on a default_cell *)
+let default_cell = { formula = Cst 0. ; value = None ; dependencies = []}
 
 
 
@@ -52,6 +55,7 @@ let oper2string = function
   | S -> "SUM"
   | M -> "MULT"
   | A -> "AVERAGE"
+  | MAX -> "MAX"
 
 let rec list2string f = function
   | [x] -> f x
