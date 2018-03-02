@@ -1,0 +1,128 @@
+P2 L3IF — spécification de fouine
+
+fouine — Syntaxe du langage
+
+Cœur du langage fouine.
+• expressions arithmétiques : constantes entières (y compris négatives), somme, soustraction, multiplication ;
+
+• parenthèses ouvrantes et fermantes, construction begin.. end ; sauts à la ligne autorisés ;
+
+• construction let .. in
+Deux exemples : let a = 3 in 2*a + a*a et let f x = x*x in f (f 3).
+
+• fonctions : on peut déclarer une fonction avec let f x z = .. ou avec let f = fun x -> fun z -> .. (ou un mélange des deux approches) .
+On peut appliquer les fonctions comme dans f s t.
+On peut utiliser une fonction directement sans la nommer (fun x -> x) a.
+
+• construction let rec (en deux mots), pour définir des fonctions récursives (pas de message d’erreur si la fonction n’est pas récursive). On ne s’intéressera qu’à des définitions récursives de fonctions.
+
+• if then else, uniquement avec des tests entre entiers ;
+opérateurs à prendre en compte : > >= < <= = <> (vous pouvez ajouter not && ||, mais ça n’est pas imposé).
+NB : il n’y a pas vraiment de type bool en fouine, au sens où un calcul renvoie soit un entier, soit une fonction, et les booléens n’apparaissent que dans la construction if then else.
+NB2 : tant qu’on y est, précisons que la grammaire de fouine se démarque de la grammaire du petit langage impératif (Imp) que d’aucuns ont pu voir dans le cours Théorie de la programmation au premier semestre. Il n’y a pas une grammaire pour les expressions arithmétiques d’un côté, et une grammaire pour les « commandes » de l’autre, tout simplement parce qu’il n’y a pas vraiment de notion de commande. En fouine, tout est expression, et 27 est une expression au même titre que (fun x -> 1+2*x) 9.
+
+• Qu’est-ce qu’un programme ?
+
+Un programme est une expression. Cette expression peut contenir des let .. in. Par conséquent, un programme est de la forme let .. = ... in ... ... let .. = ... in BLA.
+
+En l’absence d’utilisation de prInt, un programme ne fait rien de visible (tout comme en Caml, à partir du moment où l’on n’utilise pas l’interprète mais le compilateur).
+
+Il vous est en outre demandé d’autoriser les quatre facilités de saisie suivantes, pour les let.. in qui sont « en surface » :
+
+-1- un ;; peut être utilisé à la place d’un « in » pour une construction let.. in ;
+-2- on peut omettre le in, au sein d’un enchaînement de let.. in se terminant par un ;;.
+
+Ainsi, on peut écrire (et c’est « l’écriture canonique ») :
+
+let a = 3 in
+let b = 5 in
+let c = 7 in
+a*b*c
+
+et, de manière équivalente
+
+let a = 3
+let b = 5
+let c = 7;;
+a*b*c
+
+ou aussi
+
+let a = 3;;
+let b = 5
+let c =7;;
+a*b*c
+
+Mais pas
+
+let a = 3
+let b = 5
+let c = 7
+a*b*c
+
+ni des choses comme
+
+let a = 3
+let f x =
+let y = x*x
+let z = x*x*x in
+y*y*z
+
+(en effet, ci-dessus, « let y = ..  » et « let z = .. » ne sont pas en surface).
+
+-3- vous devez aussi autoriser une séquence de let.. in sans le BLA final. Une telle entrée sera traduite en la même séquence de let.. in, suivie par « in 0 » ;
+-4- vous devez autoriser l’utilisation du caractère « souligné », dans des expressions de la forme let _ = ... in (et cela n’est pas réservé aux let.. in de surface).
+
+NB : Il serait très maladroit d’avoir plusieurs constructions dans votre interprète pour les diverses écritures possibles d’un let.. in.
+
+• Un programme peut renvoyer un entier, ou une fonction (les conditions booléennes ne peuvent exister que dans les if then else).
+
+Priorités etc. Là aussi, le comportement de Caml sert de référence. La principale difficulté est le traitement des applications lorsqu’une fonction est appliquée successivement à plusieurs arguments.
+
+Vous n’avez en particulier pas le droit d’imposer à l’utilisateur d’ajouter davantage de parenthèses que ce qui est demandé en Caml.
+
+Voici quelques exemples illustratifs :
+
+# let add x y = x+y;;
+val add : int -> int -> int =
+# 3 + add 2 3;;
+- : int = 8
+# let k = 3 + (fun x -> x + 1) 5;;
+val k : int = 9
+# let k = 3 + fun x -> x + 1 5;;
+Characters 12-28:
+let k = 3 + fun x -> x + 1 5;;
+               ^^^^^^^^^^^^^^^^
+Error: This expression should not be a function, the expected type is int
+
+La fonction prInt. On ajoute une construction spéciale au langage, pour pouvoir faire de l’affichage et ainsi voir ce que font les programmes. Cette construction s’appelle prInt, c’est une fonction qui affiche son argument entier, et renvoie pour valeur ce même argument.
+Voici un petit exemple :
+
+# 2 + prInt (1+2);;
+3
+- : int = 5
+
+En Caml (mais pas en fouine), on peut définir prInt comme suit :
+
+# let prInt x = print_int x;print_newline(); x;;
+val prInt : int -> int =
+
+On se restreindra à des usages simples de prInt ; en particulier, on ne passera pas la fonction prInt à une fonction.
+
+Affichage.
+
+Vous devez programmer une fonction qui affiche un programme fouine. Afficher le programme saisi en entrée ne donne pas nécessairement le même programme, car il se peut que des transformations élémentaires soient appliquées au passage (par exemple, let f x =.. remplacé par let f = fun x -> ..). Il faudra toutefois que le programme affiché soit accepté par Caml, en supposant que l’on ait défini la fonction prInt comme ci-dessus.
+
+Exécution des programmes.
+
+Plutôt que de décrire formellement la sémantique opérationnelle de fouine, on adopte l’approche “lancez le programme avec Caml, cela vous donnera le comportement attendu”. Vous pouvez interagir avec les encadrants si vous avez des doutes sur un point précis.
+
+Typiquement, de petits programmes comme let a = prInt 5 in a + prInt 7 ou let f x y = x*y in f (prInt 3) (2+prInt 2) vous permettront de vérifier que vous implémentez les choses comme il faut.
+À noter qu’un calcul ne renvoie pas un booléen (tout du moins dans la version « de base » de fouine) : on ne manipule des booléens qu’au sein des tests dans des if then else.
+NB : fouine n’est pas IMP, le petit langage vu en théorie de la programmation (pour ceux qui ont suivi ce cours) : il ne fait pas sens de séparer les expressions arithmétiques et les commandes, car « tout est expression » en fouine.
+
+Les erreurs que ne connaı̂t pas Caml.
+En Caml, un programme est typé, ce qui permet d’éviter d’exécuter des programmes absurdes comme 3 + (fun x -> x+1). Pas de typage en fouine, du coup certainsprogrammes exploseront lors de l’exécution.
+
+Réfléchissez à la gestion de ces erreurs (appelées dynamiques), et proposez une solution plus ou moins satisfaisante. Cela peut aller de messages d’erreur un peu explicatifs dans certains cas (quand une addition fait intervenir une fonction, par exemple) à des choses plus sophistiquées, où l’on indique d’où vient l’erreur
+dans le code source.
