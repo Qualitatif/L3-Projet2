@@ -6,7 +6,6 @@ type expr =
 
 
 
-
 (* fonction d'affichage *)
 let rec affiche_expr e =
   let aff_aux s a b =
