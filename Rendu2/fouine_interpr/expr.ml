@@ -7,7 +7,7 @@ type expr =
   | Sub of expr * expr
   | Let of expr * expr * expr
   | Ite of cond * expr * expr
-  
+
 type cond =
 	True 
   | False
