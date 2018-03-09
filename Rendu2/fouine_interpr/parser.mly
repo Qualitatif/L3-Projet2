@@ -15,6 +15,7 @@
 %token FUN ARROW REC
 
 %nonassoc IN
+%nonassoc ELSE
 %left PLUS MINUS            /* associativit� gauche: a+b+c, c'est (a+b)+c */
 %left TIMES                 /* associativit� gauche: a*b*c, c'est (a*b)*c */
 %nonassoc UMINUS            /* un "faux token", correspondant au "-" unaire */
@@ -35,53 +36,63 @@
 
 
 main:                       /* <- le point d'entr�e (cf. + haut, "start") */
-    expression                          { $1 }
+    top_level_expr                      { $1 }
 ;
 
 /* It is probably possible to do the same thing as I did without detailing things
 as much as I did, but I prefered doing this to insure the parser wouldn't accept
 things which shouldn't be */
 
-expression: /* this matching assures that we cannot use semicolons anywhere */
-    | let SEMICOLONS expression         { Iter($1,$3) }
+top_level_expr: /* this matching assures that we cannot use semicolons anywhere */
+    | let SEMICOLONS top_level_expr     { Iter ($1,$3) }
     | expr                              { $1 }
 ;
 
 expr:
     | arith                             { $1 }
     | letin                             { $1 }
-    | IF condition THEN expr ELSE expr  { Ite(2$,$4,$6) }
-    | PRINT LPAREN expr RPAREN          { PrInt($3) }
+    | IF condition THEN expr ELSE expr  { Ite (2$,$4,$6) }
+    | PRINT LPAREN expr RPAREN          { PrInt $3 } /*
+    | application                       { $1 } */
 ;
 
 arith:
     | INT                               { Const $1 }
-    | LPAREN arith RPAREN               { $2 }
-    | arith PLUS arith                  { Add($1,$3) }
-    | arith TIMES arith                 { Mul($1,$3) }
-    | arith MINUS arith                 { Min($1,$3) }
-    | MINUS arith %prec UMINUS          { Min(Const 0, $2) }
+    | expr PLUS expr                    { Add ($1,$3) }
+    | expr TIMES expr                   { Mul ($1,$3) }
+    | expr MINUS expr                   { Min ($1,$3) }
+    | MINUS expr %prec UMINUS           { Min (Const 0, $2) }
 ;
 
 let:
-    | LET VAR EQUAL expr let            { Iter(Let(Var $2,$4,Const 0),$5) }
-    | LET VAR EQUAL expr                { Let(Var $2,$4,Const 0) }
-    | LET UNDERSCORE EQUAL expr let     { Iter(Let(Anon,$4,Const 0),$5) }
-    | LET UNDERSCORE EQUAL expr         { Let_anon,$4,Const 0) }
+    | LET VAR EQUAL expr let            { Iter (Let (Var $2,$4,Const 0), $5) }
+    | LET VAR EQUAL expr                { Let (Var $2, $4, Const 0) }
+    | LET UNDERSCORE EQUAL expr let     { Iter (Let (Anon, $4, Const 0), $5) }
+    | LET UNDERSCORE EQUAL expr         { Let_anon ($4,Const 0) }
 ;
 
 letin:
-    | LET VAR EQUAL expr IN expr        { Let(Var $2,$4,$6) }
-    | LET UNDERSCORE EQUAL expr IN expr { Let(Anon,$4,$6) }
+    | LET VAR EQUAL expr IN expr        { Let (Var $2, $4, $6) }
+    | LET UNDERSCORE EQUAL expr IN expr { Let (Anon,$ 4, $6) }
+;
 
 condition:
-    | expr EQUAL expr                   { Eq($1,$3) }
-    | expr NEQ expr                     { Neq($1,$3) }
-    | expr LEQ expr                     { Le($1,$3) }
-    | expr LT expr                      { Lt($1,$3) }
-    | expr GEQ expr                     { Ge($1,$3) }
-    | expr GT expr                      { Gt($1,$3) }
+    | expr EQUAL expr                   { Eq ($1, $3) }
+    | expr NEQ expr                     { Neq ($1, $3) }
+    | expr LEQ expr                     { Le ($1, $3) }
+    | expr LT expr                      { Lt ($1, $3) }
+    | expr GEQ expr                     { Ge ($1, $3) }
+    | expr GT expr                      { Gt ($1, $3) }
     | NOT condition                     { Not $2 }
-    | condition OR condition            { Or($1,$3) }
-    | condition AND condition           { And($1,$3) }
+    | condition OR condition            { Or ($1, $3) }
+    | condition AND condition           { And ($1, $3) }
 ;
+/*
+func:
+    FUN VAR ARROW expr                   { Fun ($1, $2) }
+;
+
+application:
+    | LPAREN func RPAREN expr           { App ($2, $4) }
+    | VAR expr                          { App ($1, $2) }
+*/
