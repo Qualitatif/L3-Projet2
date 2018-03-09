@@ -4,8 +4,7 @@ exception Eof;;
 }
 
 rule token = parse
-    | [' ' '\t']                                { token lexbuf } (* for blanks and tabs *)
-    | '\n'                                      { EOL } (* rather token lexbuf? *)
+    | [' ' '\t' '\n']                           { token lexbuf } (* for blanks and tabs *)
 
     | '+'                                       { PLUS }
     | '*'                                       { TIMES }

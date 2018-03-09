@@ -33,7 +33,7 @@
 
 
 main:                       /* <- le point d'entr�e (cf. + haut, "start") */
-    expression EOL                  { $1 }
+    expression                  { $1 }
 ;
 
 /* It is probably possible to do the same thing as I did without detailing things
@@ -74,9 +74,9 @@ letin:
 condition:
     | arith EQ arith                { Eq($1,$3) }
     | arith NEQ arith               { Neq($1,$3) }
-    | arith LEQ arith               { Leq($1,$3) }
+    | arith LEQ arith               { Le($1,$3) }
     | arith LT arith                { Lt($1,$3) }
-    | arith GEQ arith               { Geq($1,$3) }
+    | arith GEQ arith               { Ge($1,$3) }
     | arith GT arith                { Gt($1,$3) }
     | NOT condition                 { Not $2 }
     | condition OR condition        { Or($1,$3) }
