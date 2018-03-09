@@ -6,7 +6,9 @@ type expr =
   | Mul of expr * expr
   | Sub of expr * expr
   | Let of expr * expr * expr
+  | Let_anon of expr * expr
   | Ite of cond * expr * expr
+  | PrInt of expr
 
 and cond =
 	True
@@ -34,15 +36,17 @@ let rec affiche_expr e =
 		end
 	in
 	match e with
-	| Const k -> print_int k
+	| Const(k) -> print_int k
 	| Var(str) -> print_string str
     | Add(e1,e2) -> aff_aux "Add(" e1 e2
 	| Mul(e1,e2) -> aff_aux "Mul(" e1 e2
 	| Sub(e1,e2) -> aff_aux "Sub(" e1 e2
-	| Let(var,e1,e2) -> (print_string "Let(";print_string var;aff_aux "," e1 e2)
+	| Let(var,e1,e2) -> (print_string "Let(";affiche_expr var;aff_aux "," e1 e2)
+	| Let_anon(e1,e2) -> aff_aux "Let(_," e1 e2
 	| Ite(c,e1,e2) -> (print_string "IfThenElse(";affiche_cond c;aff_aux "," e1 e2)
-
-let rec affiche_cond c =
+	| PrInt(e) -> (print_string "PrInt(";affiche_expr e;print_string ")")
+	
+and affiche_cond c =
 	let aff_aux_log logic_op a b =
 		begin
 		print_string logic_op;
@@ -54,7 +58,7 @@ let rec affiche_cond c =
 	in
 	let aff_aux_comp comp e1 e2 =
 		begin
-		print_string logic_op;
+		print_string comp;
 		affiche_expr e1;
 		print_string ", ";
 		affiche_expr e2;
@@ -70,48 +74,6 @@ let rec affiche_cond c =
 	| Gt(e1,e2) -> aff_aux_comp "Gt(" e1 e2
 	| Eq(e1,e2) -> aff_aux_comp "Eq(" e1 e2
 	| Neq(e1,e2) -> aff_aux_comp "Neq(" e1 e2
-	| And(c1,c2) -> aff_aux_log "And(" e1 e2
-	| Or(c1,c2) -> aff_aux_log "Or(" e1 e2
+	| And(c1,c2) -> aff_aux_log "And(" c1 c2
+	| Or(c1,c2) -> aff_aux_log "Or(" c1 c2
 	| Not(c) -> (print_string "Not(";affiche_cond c;print_string ")")
-
-
-(* s�mantique op�rationnelle � grands pas *)
-let rec eval_cond = function
-  | True -> true
-  | False -> false
-  | Le(e1,e2) -> (eval e1) <= (eval e2)
-  | Lt(e1,e2) -> (eval e1) < (eval e2)
-  | Ge(e1,e2) -> (eval e1) >= (eval e2)
-  | Gt(e1,e2) -> (eval e1) > (eval e2)
-  | Eq(e1,e2) -> (eval e1) == (eval e2)
-  | Neq(e1,e2) -> (eval e1) != (eval e2)
-  | And(c1,c2) -> (eval_cond c1) && (eval_cond c2)
-  | Or(c1,c2) -> (eval_cond c1) || (eval_cond c2)
-  | Not(c) -> not (eval_cond c)
-
-let rec replace var_name var_value e =
-	match e with
-	| Const k -> k
-  	| Var(str) -> if (str==var_name) then var_value else Var(str)
-  	| Add(e1,e2) -> (eval e1) + (eval e2)
-  	| Mul(e1,e2) -> (eval e1) * (eval e2)
-  	| Sub(e1,e2) -> (eval e1) - (eval e2)
-  	| Let(var,e1,e2) -> (match var with
-  					  |Var(str) -> replace var_name var_value (replace str e1 e2)
-  					  |_ -> failwith "Error: Incorrect name of variable")
-  	| Ite(c,e1,e2) -> (match (eval_cond c) with
-  					| true -> e1
-  					| false -> e2)
-
-let rec eval = function
-  | Const k -> k
-  | Var(str) -> failwith "Error: variable not declared"
-  | Add(e1,e2) -> (eval e1) + (eval e2)
-  | Mul(e1,e2) -> (eval e1) * (eval e2)
-  | Sub(e1,e2) -> (eval e1) - (eval e2)
-  | Let(var,e1,e2) -> (match var with
-  					  |Var(str) -> eval (replace str e1 e2)
-  					  |_ -> failwith "Error: Incorrect name of variable")
-  | Ite(c,e1,e2) -> (match (eval_cond c) with
-  					| true -> e1
-  					| false -> e2)
