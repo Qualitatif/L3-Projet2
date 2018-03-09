@@ -14,15 +14,14 @@ rule token = parse
     | ['0'-'9']+ as s                           { INT (int_of_string s) }
 
     | "let"                                     { LET }
-    | '='                                       { ASS }
+    | '='                                       { EQUAL }
     | "in"                                      { IN }
     | ";;"                                      { SEMICOLONS }
-    | '_'                                       { ANON }
+    | '_'                                       { UNDERSCORE }
 
     | "if"                                      { IF }
     | "then"                                    { THEN }
     | "else"                                    { ELSE }
-    | "=="                                      { EQ }
     | "<>"                                      { NEQ }
     | "<="                                      { LEQ }
     | '<'                                       { LT }
@@ -33,6 +32,10 @@ rule token = parse
     | "&&"                                      { AND }
 
     | "prInt"                                   { PRINT }
+
+    | "fun"                                     { FUN }
+    | "->"                                      { ARROW }
+    | "rec"                                     { REC }
 
     | ['a'-'z']['a'-'z' 'A'-'Z' '0'-'9']* as s  { VAR s }
 
