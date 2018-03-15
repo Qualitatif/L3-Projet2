@@ -9,6 +9,9 @@ type expr =
   | Let_anon of expr * expr
   | Ite of cond * expr * expr
   | PrInt of expr
+  | Semis of expr * expr
+  | Fun of expr * expr
+  | App of expr * expr
 
 and cond =
 	True
@@ -45,7 +48,7 @@ let rec affiche_expr e =
 	| Let_anon(e1,e2) -> aff_aux "Let(_," e1 e2
 	| Ite(c,e1,e2) -> (print_string "IfThenElse(";affiche_cond c;aff_aux "," e1 e2)
 	| PrInt(e) -> (print_string "PrInt(";affiche_expr e;print_string ")")
-	
+
 and affiche_cond c =
 	let aff_aux_log logic_op a b =
 		begin
