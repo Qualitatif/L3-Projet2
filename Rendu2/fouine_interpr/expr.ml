@@ -9,6 +9,7 @@ type expr =
   | Let_anon of expr * expr
   | Ite of cond * expr * expr
   | PrInt of expr
+  | Semis of expr * expr  
 
 and cond =
 	True
