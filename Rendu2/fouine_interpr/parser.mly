@@ -26,6 +26,9 @@
 %left AND
 %nonassoc NOT
 
+%nonassoc RPAREN
+%nonassoc VAR               /* f g x c'est f (g x)
+
 %start main                 /* "start" signale le point d'entr�e: */
                             /* c'est ici main, qui est d�fini plus bas */
 %type <Expr.expr> main      /* on _doit_ donner le type associ� au point d'entr�e */
@@ -44,7 +47,7 @@ as much as I did, but I prefered doing this to insure the parser wouldn't accept
 things which shouldn't be */
 
 top_level_expr: /* this matching assures that we cannot use semicolons anywhere */
-    | lett SEMICOLONS top_level_expr     { Iter ($1,$3) }
+    | let SEMICOLONS top_level_expr     { Semis ($1,$3) }
     | expr                              { $1 }
 ;
 
@@ -65,15 +68,15 @@ arith:
 ;
 
 lett:
-    | LET VAR EQUAL expr lett            { Iter (Let (Var $2,$4,Const 0), $5) }
+    | LET VAR EQUAL expr lett            { Let (Var $2, $4, $5) }
     | LET VAR EQUAL expr                { Let (Var $2, $4, Const 0) }
-    | LET UNDERSCORE EQUAL expr lett     { Iter (Let (Anon, $4, Const 0), $5) }
+    | LET UNDERSCORE EQUAL expr lett     { Let (Anon, $4, $5) }
     | LET UNDERSCORE EQUAL expr         { Let_anon ($4,Const 0) }
 ;
 
 letin:
     | LET VAR EQUAL expr IN expr        { Let (Var $2, $4, $6) }
-    | LET UNDERSCORE EQUAL expr IN expr { Let (Anon,$4, $6) }
+    | LET UNDERSCORE EQUAL expr IN expr { Let (Anon, $4, $6) }
 ;
 
 condition:
