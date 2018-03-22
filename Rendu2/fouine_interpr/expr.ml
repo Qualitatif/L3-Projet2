@@ -48,6 +48,8 @@ let rec affiche_expr e =
 	| Let_anon(e1,e2) -> aff_aux "Let(_," e1 e2
 	| Ite(c,e1,e2) -> (print_string "IfThenElse(";affiche_cond c;aff_aux "," e1 e2)
 	| PrInt(e) -> (print_string "PrInt(";affiche_expr e;print_string ")")
+	| Fun(e1,e2) -> print_string aff_aux "Fun(" e1 e2
+	| App(e1,e2) -> print_string aff_aux "Fun(" e1 e2
 
 and affiche_cond c =
 	let aff_aux_log logic_op a b =
