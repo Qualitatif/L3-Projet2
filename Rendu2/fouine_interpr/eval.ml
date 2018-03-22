@@ -16,6 +16,9 @@ let rec eval_anon e env =
   | Let_anon(e1,e2) -> env
   | Ite(c,e1,e2) -> env
   | PrInt(e) -> env
+  | Semis(e1,e2) -> env
+  | Fun(e1,e2) -> env
+  | App(e1,e2) -> env
 
 let rec eval e env =
   match e with
@@ -29,7 +32,10 @@ let rec eval e env =
   					  |_ -> failwith "Error: Incorrect name of variable")
   | Let_anon(e1,e2) -> eval e2 (eval_anon e1 env)
   | Ite(c,e1,e2) -> if eval_cond c env then eval e1 env else eval e2 env
-  | PrInt(e) -> let _ = print_int(eval e env) in eval e env  
+  | PrInt(e) -> let _ = print_int(eval e env) in eval e env
+  | Semis(e1,e2) -> 0 (*??*)
+  | Fun(e1,e2) -> 0 (*Que représentent e1,e2?*)
+  | App(e1,e2) -> 0 (*A faire*)  
   
 and eval_cond c env =
   match c with
