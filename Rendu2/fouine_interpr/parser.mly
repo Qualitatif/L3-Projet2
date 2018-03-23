@@ -95,7 +95,7 @@ condition:
 ;
 
 func:
-    | FUN VAR ARROW expr                { Fun (Var $2, $4) }
+    | FUN VAR ARROW expr                { Fun ($2, $4) }
     | IF condition THEN func ELSE func  { Ite ($2, $4, $6) }
 ;
 

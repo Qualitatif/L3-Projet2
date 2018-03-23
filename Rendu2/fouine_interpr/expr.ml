@@ -10,7 +10,7 @@ type expr =
   | Ite of cond * expr * expr
   | PrInt of expr
   | Semis of expr * expr
-  | Fun of expr * expr
+  | Fun of string * expr
   | App of expr * expr
 
 and cond =
@@ -49,8 +49,8 @@ let rec affiche_expr e =
 	| Ite(c,e1,e2) -> (print_string "IfThenElse(";affiche_cond c;aff_aux "," e1 e2)
 	| PrInt(e) -> (print_string "PrInt(";affiche_expr e;print_string ")")
 	| Semis(e1,e2) -> aff_aux "Semis(" e1 e2
-	| Fun(e1,e2) -> aff_aux "Fun(" e1 e2
-	| App(e1,e2) -> aff_aux "Fun(" e1 e2
+	| Fun(s1,e2) -> aff_aux "Fun(" (Var s1) e2
+	| App(e1,e2) -> aff_aux "App(" e1 e2
 	
 and affiche_cond c =
 	let aff_aux_log logic_op a b =

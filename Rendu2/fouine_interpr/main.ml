@@ -5,7 +5,10 @@ let compile e =
   begin
     affiche_expr e;
     print_newline();
-    print_int (eval e []);
+    (let v =eval e [] in
+    	match v with 
+    	| VI(k) -> print_int(k)
+    	| VF(x,e) -> print_string("fonction..."));
     print_newline()
   end
 
