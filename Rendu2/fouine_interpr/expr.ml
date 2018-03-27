@@ -33,7 +33,7 @@ let rec affiche_expr e =
 		begin
 		print_string s;
 		affiche_expr a;
-		print_string ", ";
+		print_string ",";
 		affiche_expr b;
 		print_string ")"
 		end
@@ -47,7 +47,7 @@ let rec affiche_expr e =
 	| Let(var,e1,e2) -> (print_string "Let(";affiche_expr var;aff_aux "," e1 e2)
 	| Let_anon(e1,e2) -> aff_aux "Let(_," e1 e2
 	| Ite(c,e1,e2) -> (print_string "IfThenElse(";affiche_cond c;aff_aux "," e1 e2)
-	| PrInt(e) -> (print_string "PrInt(";affiche_expr e;print_string ")")
+	| PrInt(e) -> (print_string "PrInt(";affiche_expr e;print_string ")\n")
 	| Semis(e1,e2) -> aff_aux "Semis(" e1 e2
 	| Fun(s1,e2) -> aff_aux "Fun(" (Var s1) e2
 	| App(e1,e2) -> aff_aux "App(" e1 e2
@@ -57,7 +57,7 @@ and affiche_cond c =
 		begin
 		print_string logic_op;
 		affiche_cond a;
-		print_string ", ";
+		print_string ",";
 		affiche_cond b;
 		print_string ")";
 		end
@@ -66,7 +66,7 @@ and affiche_cond c =
 		begin
 		print_string comp;
 		affiche_expr e1;
-		print_string ", ";
+		print_string ",";
 		affiche_expr e2;
 		print_string ")";
 		end
