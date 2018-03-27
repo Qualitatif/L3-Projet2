@@ -11,7 +11,7 @@ Intermediary level version
 --------------------------
 * Les fonctions marchent
 * Les séparateurs marchent
-* Le let_anon ne marche pas encore (*à voir*)
+* Le let_anon fonctionne
 
 ---------------------------------------------------------------------------
 
