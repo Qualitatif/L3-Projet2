@@ -5,6 +5,7 @@ type expr =
   | Add of expr * expr
   | Mul of expr * expr
   | Sub of expr * expr
+  | Div of expr * expr
   | Let of expr * expr * expr
   | Let_anon of expr * expr
   | Ite of cond * expr * expr
@@ -44,6 +45,7 @@ let rec affiche_expr e =
     | Add(e1,e2) -> aff_aux "Add(" e1 e2
 	| Mul(e1,e2) -> aff_aux "Mul(" e1 e2
 	| Sub(e1,e2) -> aff_aux "Sub(" e1 e2
+	| Div(e1,e2) -> aff_aux "Div(" e1 e2
 	| Let(var,e1,e2) -> (print_string "Let(";affiche_expr var;aff_aux "," e1 e2)
 	| Let_anon(e1,e2) -> aff_aux "Let(_," e1 e2
 	| Ite(c,e1,e2) -> (print_string "IfThenElse(";affiche_cond c;aff_aux "," e1 e2)

@@ -4,7 +4,7 @@
 
 %token <int> INT            /* le lex�me INT a un attribut entier */
 %token <string> VAR         /* le lex�me INT a un attribut entier */
-%token PLUS TIMES MINUS
+%token PLUS TIMES MINUS DIVIDE
 %token LPAREN RPAREN
 %token SEMICOLONS
 %token LET EQUAL IN UNDERSCORE
@@ -13,11 +13,12 @@
 %token NOT OR AND
 %token PRINT
 %token FUN ARROW REC
-
+%token EOF
 
 %nonassoc IN
 %nonassoc ELSE
 %left PLUS MINUS            /* associativit� gauche: a+b+c, c'est (a+b)+c */
+%left DIVIDE
 %left TIMES                 /* associativit� gauche: a*b*c, c'est (a*b)*c */
 %nonassoc UMINUS            /* un "faux token", correspondant au "-" unaire */
                             /* cf. son usage plus bas : il sert � "marquer" une
@@ -26,9 +27,9 @@
 %left OR
 %left AND
 %nonassoc NOT
-
 %nonassoc RPAREN
-%nonassoc VAR               /* f g x c'est (f g) x */
+%nonassoc PRINT
+%nonassoc VAR INT LPAREN    /* f g x c'est (f g) x */
 
 %start main                 /* "start" signale le point d'entr�e: */
                             /* c'est ici main, qui est d�fini plus bas */
@@ -49,23 +50,23 @@ things which shouldn't be */
 
 top_level_expr: /* this matching assures that we cannot use semicolons anywhere */
     | lett SEMICOLONS top_level_expr    { Semis ($1, $3) }
-    | expr                              { $1 }
+    | expr EOF                          { $1 }
 ;
 
 expr:
-    | VAR                               { Var $1 }
     | arith                             { $1 }
     | letin                             { $1 }
     | IF condition THEN expr ELSE expr  { Ite ($2, $4, $6) }
-    | PRINT LPAREN expr RPAREN          { PrInt $3 }
-    | op input                          { App ($1, $2) }
+    | PRINT input        				{ PrInt $2 }
+    | expr input                        { App ($1, $2) }
+    | input								{ $1 }
 ;
 
 arith:
-    | INT                               { Const $1 }
     | expr PLUS expr                    { Add ($1, $3) }
     | expr TIMES expr                   { Mul ($1, $3) }
     | expr MINUS expr                   { Sub ($1, $3) }
+    | expr DIVIDE expr					{ Div ($1, $3) }
     | MINUS expr %prec UMINUS           { Sub (Const 0, $2) }
 ;
 
@@ -97,13 +98,6 @@ condition:
 func:
     | FUN VAR ARROW expr                { Fun ($2, $4) }
     | IF condition THEN func ELSE func  { Ite ($2, $4, $6) }
-;
-
-op:
-    | VAR                               { Var $1 }
-    | LPAREN func RPAREN                { $2 }
-    | op input                          { App ($1, $2) }
-    | LPAREN op RPAREN                  { $2 }
 ;
 
 input:

@@ -9,6 +9,7 @@ rule token = parse
     | '+'                                       { PLUS }
     | '*'                                       { TIMES }
     | '-'                                       { MINUS }
+    | '/'										{ DIVIDE }
     | '('                                       { LPAREN }
     | ')'                                       { RPAREN }
     | ['0'-'9']+ as s                           { INT (int_of_string s) }
@@ -39,4 +40,4 @@ rule token = parse
 
     | ['a'-'z']['a'-'z' 'A'-'Z' '0'-'9']* as s  { VAR s }
 
-    | eof                                       { raise Eof }
+    | eof                                       { EOF }

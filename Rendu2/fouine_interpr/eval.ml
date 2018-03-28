@@ -32,6 +32,13 @@ let rec eval e env =
   				  			   | VI(k2) -> VI (k1-k2)
   				  			   | VF(f,e) -> failwith "TypeError: Sub of int and function")
   				  | VF(f1,e) -> failwith "TypeError: Sub of functions")
+  | Div(e1,e2) -> (let v1 = (eval e1 env) in 
+  				  let v2 = (eval e2 env) in
+  				  match v1 with
+  				  | VI(k1) -> (match v2 with
+  				  			   | VI(k2) -> VI (k1/k2)
+  				  			   | VF(f,e) -> failwith "TypeError: Div of int and function")
+  				  | VF(f1,e) -> failwith "TypeError: Div of functions")
   | Let(var,e1,e2) -> (match var with
   					  |Var(str) -> (let v1 = eval e1 env in match v1 with
   					  										| VI(_) -> eval e2 ((str,v1)::env)
@@ -107,6 +114,7 @@ and eval_anon e env =
   | Add(e1,e2) -> env
   | Mul(e1,e2) -> env
   | Sub(e1,e2) -> env
+  | Div(e1,e2) -> env
   | Let(var,e1,e2) -> (match var with
   					  |Var(str) -> (let v1 = eval e1 env in match v1 with
   					  										| VI(_) -> eval_anon e2 ((str,v1)::env)
