@@ -1,6 +1,6 @@
 {
     open Parser;;
-exception Eof;;
+exception EOF;;
 }
 
 rule token = parse

@@ -27,6 +27,7 @@ and cond =
   | Or of cond * cond
   | Not of cond
 
+let lettres_capitales = ref false
 
 (* fonction d'affichage *)
 let rec affiche_expr e =
@@ -53,7 +54,7 @@ let rec affiche_expr e =
 	| Semis(e1,e2) -> aff_aux "Semis(" e1 e2
 	| Fun(s1,e2) -> aff_aux "Fun(" (Var s1) e2
 	| App(e1,e2) -> aff_aux "App(" e1 e2
-	
+
 and affiche_cond c =
 	let aff_aux_log logic_op a b =
 		begin
