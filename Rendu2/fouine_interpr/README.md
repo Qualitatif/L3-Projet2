@@ -4,13 +4,13 @@ Everything works.
 
 Expressions can both end with or without a pair of semicolons `;;`.
 
-All variations on `let` have been implemented.
+No shift/reduce or reduce/reduce conflicts.
 
 ## Options
 
 * `-debug`;
-* `-debug+`;
 * `-shout`;
+* `-debug+`;
 * `-env` (not yet functional);
 * Descriptions of the options above are available using `./fouine -help` or `./fouine --help`.
 
