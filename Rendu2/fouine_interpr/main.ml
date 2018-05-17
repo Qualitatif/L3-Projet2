@@ -1,5 +1,5 @@
 open Expr
-open Eval
+open Eval;;
 
 let compile e =
     begin
