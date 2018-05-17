@@ -1,116 +1,94 @@
 open Expr
 
-type valeur = VI of int | VF of (string*expr)
+type closure = string * expr * env
+and env = (string * value) list
+and value = I of int | Cl of closure
 
-let rec eval_anon e env =
-  match e with
-  | Const(k) -> env
-  | Var(str) -> env
-  | Add(e1,e2) -> env
-  | Mul(e1,e2) -> env
-  | Sub(e1,e2) -> env
-  | Let(var,e1,e2) -> env
-  | Let_anon(e1,e2) -> env
-  | Ite(c,e1,e2) -> env
-  | PrInt(e) -> env
-  | Semis(e1,e2) -> env
-  | Fun(e1,e2) -> env
-  | App(e1,e2) -> env
+(* sémantique opérationnelle à grands pas *)
+let maxVerbose = ref false
+let toPrInt = ref false
+let giveEnv = ref false
 
-let rec eval_var var env =
-  match env with
-  | [] -> failwith "Error: variable not declared"
-  | (str,value)::r -> if str==var then value else eval_var var r
+let rec print_env ev = (* this option doesn't work yet *)
+    match ev with
+    | []         -> print_string "]\n"
+    | [(vr,vl)]  -> (match vl with
+                        | I(x)          ->  print_string ("(" ^ vr ^ ", " ^ (string_of_int x) ^ ")]\n")
+                        | Cl(f, ex, ev) ->  print_string ("(" ^ vr ^ ", (" ^ f);
+                                            display_expr ex;
+                                            print_env ev;
+                                            print_string ")]\n")
+    | (vr,vl)::q -> (match vl with
+                        | I(x)          ->  print_string ("(" ^ vr ^ ", " ^ (string_of_int x) ^ ")]\n")
+                        | Cl(f, ex, ev) ->  print_string ("(" ^ vr ^ ", (" ^ f);
+                                            display_expr ex;
+                                            print_env ev;
+                                            print_string ");\n")
 
-let rec eval e env =
-  match e with
-  | Const(k) -> VI k
-  | Var(str) -> eval_var str env
-  | Add(e1,e2) -> (let v1 = (eval e1 env) in 
-  				  let v2 = (eval e2 env) in
-  				  match v1 with
-  				  | VI(k1) -> (match v2 with
-  				  			   | VI(k2) -> VI (k1+k2)
-  				  			   | VF(f,e) -> failwith "TypeError: Add of int and function")
-  				  | VF(f1,e) -> failwith "TypeError: Add of functions")
-  | Mul(e1,e2) -> (let v1 = (eval e1 env) in 
-  				  let v2 = (eval e2 env) in
-  				  match v1 with
-  				  | VI(k1) -> (match v2 with
-  				  			   | VI(k2) -> VI (k1*k2)
-  				  			   | VF(f,e) -> failwith "TypeError: Mul of int and function")
-  				  | VF(f1,e) -> failwith "TypeError: Mul of functions")
-  | Sub(e1,e2) -> (let v1 = (eval e1 env) in 
-  				  let v2 = (eval e2 env) in
-  				  match v1 with
-  				  | VI(k1) -> (match v2 with
-  				  			   | VI(k2) -> VI (k1-k2)
-  				  			   | VF(f,e) -> failwith "TypeError: Sub of int and function")
-  				  | VF(f1,e) -> failwith "TypeError: Sub of functions")
-  | Let(var,e1,e2) -> (match var with
-  					  |Var(str) -> (let v1 = eval e1 env in match v1 with
-  					  										| VI(_) -> eval e2 ((str,v1)::env)
-  					  										| VF(_) -> VI 0)
-  					  |_ -> failwith "Error: Incorrect name of variable")
-  | Let_anon(e1,e2) -> eval e2 (eval_anon e1 env)
-  | Ite(c,e1,e2) -> if eval_cond c env then eval e1 env else eval e2 env
-  | PrInt(e) -> let v = eval e env in (match v with
-  									   | VI(k) -> let _ = print_int(k) in v
-  									   | VF(x,e) -> let _ = print_string("fonction...") in v)
-  | Semis(e1,e2) -> VI 0 (*??*)
-  | Fun(x,e) -> VF (x,e) 
-  | App(e1,e2) -> (let v = eval e2 env in  
-      let f = eval e1 env in
-      match f with
-      | VF(x,e) -> eval e ((x,v)::env)
-      | VI _ -> failwith "Error: Incorrect name of function")
-  
-and eval_cond c env =
-  match c with
-  | True -> true
-  | False -> false
-  | Le(e1,e2) -> (let v1 = (eval e1 env) in 
-  				  let v2 = (eval e2 env) in
-  				  match v1 with
-  				  | VI(k1) -> (match v2 with
-  				  			   | VI(k2) -> k1<=k2
-  				  			   | VF(f,e) -> failwith "TypeError: Comaprison of int and function")
-  				  | VF(f1,e) -> failwith "TypeError: Comparison of functions")
-  | Lt(e1,e2) -> (let v1 = (eval e1 env) in 
-  				  let v2 = (eval e2 env) in
-  				  match v1 with
-  				  | VI(k1) -> (match v2 with
-  				  			   | VI(k2) -> k1<k2
-  				  			   | VF(f,e) -> failwith "TypeError: Comaprison of int and function")
-  				  | VF(f1,e) -> failwith "TypeError: Comparison of functions")
-  | Ge(e1,e2) -> (let v1 = (eval e1 env) in 
-  				  let v2 = (eval e2 env) in
-  				  match v1 with
-  				  | VI(k1) -> (match v2 with
-  				  			   | VI(k2) -> k1>=k2
-  				  			   | VF(f,e) -> failwith "TypeError: Comaprison of int and function")
-  				  | VF(f1,e) -> failwith "TypeError: Comparison of functions")
-  | Gt(e1,e2) -> (let v1 = (eval e1 env) in 
-  				  let v2 = (eval e2 env) in
-  				  match v1 with
-  				  | VI(k1) -> (match v2 with
-  				  			   | VI(k2) -> k1>k2
-  				  			   | VF(f,e) -> failwith "TypeError: Comaprison of int and function")
-  				  | VF(f1,e) -> failwith "TypeError: Comparison of functions")
-  | Eq(e1,e2) -> (let v1 = (eval e1 env) in 
-  				  let v2 = (eval e2 env) in
-  				  match v1 with
-  				  | VI(k1) -> (match v2 with
-  				  			   | VI(k2) -> k1==k2
-  				  			   | VF(f,e) -> failwith "TypeError: Comaprison of int and function")
-  				  | VF(f1,e) -> failwith "TypeError: Comparison of functions")
-  | Neq(e1,e2) -> (let v1 = (eval e1 env) in 
-  				  let v2 = (eval e2 env) in
-  				  match v1 with
-  				  | VI(k1) -> (match v2 with
-  				  			   | VI(k2) -> k1<>k2
-  				  			   | VF(f,e) -> failwith "TypeError: Comaprison of int and function")
-  				  | VF(f1,e) -> failwith "TypeError: Comparison of functions")
-  | And(c1,c2) -> (eval_cond c1 env) && (eval_cond c2 env)
-  | Or(c1,c2) -> (eval_cond c1 env) || (eval_cond c2 env)
-  | Not(c) -> not (eval_cond c env)
+let p_verb s ev =   if !maxVerbose
+                        then (if !giveEnv
+                            then (Format.printf "%s in [" s; print_env ev)
+                            else Format.printf "%s\n" s)
+                    else ()
+
+let rec eval ex ev = match ex with
+    | Const k       -> k
+    | Var v         -> (p_verb "Reading var" ev;
+                        try
+                            (if String.compare (fst (List.hd ev)) v == 0
+                                then match snd (List.hd ev) with
+                                    | I(x)  -> x
+                                    | _     -> 0 (* case to consider later on
+                                                    when there will be functions *)
+                                else eval (Var v) (List.tl ev))
+                        with _ -> print_string ("Failure: " ^ v ^ " is a free variable!\n"); 0)
+    | Add(e1,e2)    -> (p_verb "Adding" ev;
+                        eval e1 ev + eval e2 ev)
+    | Mul(e1,e2)    -> (p_verb "Multipliying" ev;
+                        eval e1 ev * eval e2 ev)
+    | Sub(e1,e2)    -> (p_verb "Substracting" ev;
+                        eval e1 ev - eval e2 ev)
+    | Div(e1,e2)    -> (p_verb "Dividing" ev;
+                        eval e1 ev / eval e2 ev)
+    | PrInt(e)      -> (p_verb "PrInting" ev;
+                        let x = eval e ev in (print_int x; print_newline(); x))
+    | Let(e1,e2,e3) -> (p_verb "Declaring" ev;
+                        match e1 with
+                            | Var v -> let x = eval e2 ev
+                                in eval e3 ((v,I(x))::ev)
+                            | _     -> failwith "How did you trick the parser?!")
+                                (* This case shouldn't happen *)
+    | Ite(cd,e1,e2) -> (p_verb "If Then Else" ev;
+                        let cnd = (eval_cond cd ev) in if cnd
+                                then (eval e1 ev)
+                                else (eval e2 ev))
+    | _ -> 0
+
+and eval_cond cd ev = match cd with
+    | True -> true
+    | False -> false
+    | Leq(e1,e2) -> (let x = eval e1 ev
+                        in let y = eval e2 ev
+                            in x <= y)
+    | Lt(e1,e2) -> (let x = eval e1 ev
+                        in let y = eval e2 ev
+                            in x < y)
+    | Geq(e1,e2) -> (let x = eval e1 ev
+                        in let y = eval e2 ev
+                            in x >= y)
+    | Gt(e1,e2) -> (let x = eval e1 ev
+                        in let y = eval e2 ev
+                            in x > y)
+    | Eq(e1,e2) -> (let x = eval e1 ev
+                        in let y = eval e2 ev
+                            in x == y)
+    | Neq(e1,e2) -> (let x = eval e1 ev
+                        in let y = eval e2 ev
+                            in x <> y)
+    | And(c1,c2) -> (let b1 = eval_cond c1 ev
+                        in let b2 = eval_cond c2 ev
+                            in b1 && b2)
+    | Or(c1,c2) -> (let b1 = eval_cond c1 ev
+                        in let b2 = eval_cond c2 ev
+                            in b1 || b2)
+    | Not(cd) -> not (eval_cond cd ev)

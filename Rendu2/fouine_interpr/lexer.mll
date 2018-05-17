@@ -1,6 +1,6 @@
 {
     open Parser;;
-exception Eof;;
+exception EOF;;
 }
 
 rule token = parse
@@ -9,6 +9,7 @@ rule token = parse
     | '+'                                       { PLUS }
     | '*'                                       { TIMES }
     | '-'                                       { MINUS }
+    | '/'										{ SLASH }
     | '('                                       { LPAREN }
     | ')'                                       { RPAREN }
     | ['0'-'9']+ as s                           { INT (int_of_string s) }
@@ -28,8 +29,8 @@ rule token = parse
     | ">="                                      { GEQ }
     | '>'                                       { GT }
     | "not"                                     { NOT }
-    | "||"                                      { OR }
-    | "&&"                                      { AND }
+    | "||"                                      { PIPES }
+    | "&&"                                      { AMPERSANDS }
 
     | "prInt"                                   { PRINT }
 
@@ -39,4 +40,4 @@ rule token = parse
 
     | ['a'-'z']['a'-'z' 'A'-'Z' '0'-'9']* as s  { VAR s }
 
-    | eof                                       { raise Eof }
+    | eof                                       { EOF }
