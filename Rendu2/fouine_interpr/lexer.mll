@@ -31,6 +31,8 @@ rule token = parse
     | "not"                                     { NOT }
     | "||"                                      { PIPES }
     | "&&"                                      { AMPERSANDS }
+    | "true"                                    { TRUE }
+    | "false"                                   { FALSE }
 
     | "prInt"                                   { PRINT }
 

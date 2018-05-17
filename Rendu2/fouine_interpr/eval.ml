@@ -32,8 +32,8 @@ let p_verb s ev =   if !maxVerbose
                     else ()
 
 let rec eval ex ev = match ex with
-    | Const k       -> k
-    | Var v         -> (p_verb "Reading var" ev;
+    | Const k           -> k
+    | Var v             -> (p_verb "Reading var" ev;
                         try
                             (if String.compare (fst (List.hd ev)) v == 0
                                 then match snd (List.hd ev) with
@@ -41,25 +41,27 @@ let rec eval ex ev = match ex with
                                     | _     -> 0 (* case to consider later on
                                                     when there will be functions *)
                                 else eval (Var v) (List.tl ev))
-                        with _ -> print_string ("Failure: " ^ v ^ " is a free variable!\n"); 0)
-    | Add(e1,e2)    -> (p_verb "Adding" ev;
+                        with _ -> failwith ("Unbound value " ^ v))
+    | Add(e1,e2)        -> (p_verb "Adding" ev;
                         eval e1 ev + eval e2 ev)
-    | Mul(e1,e2)    -> (p_verb "Multipliying" ev;
+    | Mul(e1,e2)        -> (p_verb "Multipliying" ev;
                         eval e1 ev * eval e2 ev)
-    | Sub(e1,e2)    -> (p_verb "Substracting" ev;
+    | Sub(e1,e2)        -> (p_verb "Substracting" ev;
                         eval e1 ev - eval e2 ev)
-    | Div(e1,e2)    -> (p_verb "Dividing" ev;
+    | Div(e1,e2)        -> (p_verb "Dividing" ev;
                         eval e1 ev / eval e2 ev)
-    | PrInt(e)      -> (p_verb "PrInting" ev;
+    | PrInt(e)          -> (p_verb "PrInting" ev;
                         let x = eval e ev in (print_int x; print_newline(); x))
-    | Let(e1,e2,e3) -> (p_verb "Declaring" ev;
-                        match e1 with
-                            | Var v -> let x = eval e2 ev
-                                in eval e3 ((v,I(x))::ev)
-                            | _     -> failwith "How did you trick the parser?!")
-                                (* This case shouldn't happen *)
-    | Ite(cd,e1,e2) -> (p_verb "If Then Else" ev;
-                        let cnd = (eval_cond cd ev) in if cnd
+    | Let(e1,e2,e3)     -> (p_verb "Declaring" ev;
+                            match e1 with
+                                | Var v -> let x = eval e2 ev
+                                    in eval e3 ((v,I(x))::ev)
+                                | _     -> failwith "How did you trick the parser?!")
+                                    (* This case shouldn't happen *)
+    | Let_anon(e1,e2)   -> (p_verb "Anonymous declaration" ev;
+                            let _ = eval e1 ev in eval e2 ev)
+    | Ite(cd,e1,e2)     -> (p_verb "If Then Else" ev;
+                            let cnd = (eval_cond cd ev) in if cnd
                                 then (eval e1 ev)
                                 else (eval e2 ev))
     | _ -> 0

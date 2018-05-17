@@ -26,9 +26,9 @@ let fonction_principale () =
      Voir la librairie "Arg" de Caml pour davantage de details *)
   let optlist = [
     ("-debug", Arg.Set verbose, " Activates light debug mode" );
-    ("-debug+", Arg.Set maxVerbose, " Activates full debug mode" );
+    ("-debug+", Arg.Set maxVerbose, " Activates full debug mode: prints the operations one by one at the moment they are executed" );
     ("-shout", Arg.Set caps, " Types operators in capitals in both debug modes");
-    ("-env", Arg.Set giveEnv, " Displays current environments in full debug mode [currently ill functional]")
+    ("-env", Arg.Set giveEnv, " Displays current environments in full debug mode [not yet functional]")
   ] in
   let usage = "Help menu for fouine:" in  (* message d'accueil *)
   Arg.parse (* ci-dessous les 3 arguments de Arg.parse : *)

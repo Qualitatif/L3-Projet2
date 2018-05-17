@@ -10,6 +10,7 @@
 %token LET EQUAL IN UNDERSCORE
 %token IF THEN ELSE
 %token NEQ LEQ LT GEQ GT
+%token TRUE FALSE
 %token NOT PIPES AMPERSANDS
 %token PRINT
 %token FUN ARROW REC
@@ -40,7 +41,8 @@
 
 
 main:                       /* <- le point d'entr�e (cf. + haut, "start") */
-    top_level_expr EOF                      { $1 }
+    | top_level_expr EOF                    { $1 }
+    | expr SEMICOLONS EOF                   { $1 }
 ;
 
 /* It is probably possible to do the same thing as I did without detailing things
@@ -48,12 +50,9 @@ as much as I did, but I prefered doing this to insure the parser wouldn't accept
 things which shouldn't be */
 
 top_level_expr: /* this matching assures that we cannot use semicolons anywhere */
-    | lett                                  { $1 }
+    | top_let                               { $1 }
     | expr                                  { $1 }
-/*    | top_level_expr SEMICOLONS top_level_expr { Let_anon ($1, $3) } */
 ;
-
-/* brouillon */
 
 expr:
     | VAR                                   { Var $1 }
@@ -80,34 +79,29 @@ arith:
     | MINUS expr %prec UMINUS               { Sub (Const 0, $2) }
 ;
 
-/* plusBrouillon */
-/*
-expr:
-    | arith                                 { $1 }
-    | letin                                 { $1 }
-    | IF condition THEN expr ELSE expr      { Ite ($2, $4, $6) }
-    | PRINT input        				    { PrInt $2 }
-    | expr input                            { App ($1, $2) }
-    | input								    { $1 }
-;
-*/
+top_let:
+    | LET UNDERSCORE EQUAL expr             { Let_anon ($4, Const 0) }
+    | LET VAR EQUAL expr                    { Let (Var $2, $4, Const 0) }
+    | lett                                  { $1 }
+
 lett:
     | LET VAR EQUAL expr lett               { Let (Var $2, $4, $5) }
+    | LET UNDERSCORE EQUAL expr lett        { Let_anon ($4, $5) }
     | LET VAR EQUAL expr SEMICOLONS         { Let (Var $2, $4, Const 0) }
-    | LET VAR EQUAL expr SEMICOLONS top_level_expr    { Let (Var $2, $4, $6) }
-/*    | LET UNDERSCORE EQUAL expr lett      { Let_anon ($4, $5) }
-    | LET UNDERSCORE EQUAL expr             { Let_anon ($4, Const 0) } */
+    | LET UNDERSCORE EQUAL expr SEMICOLONS  { Let_anon ($4, Const 0) }
+    | LET VAR EQUAL expr SEMICOLONS top_level_expr  { Let (Var $2, $4, $6) }
+    | LET UNDERSCORE EQUAL expr SEMICOLONS top_level_expr   { Let_anon ($4, $6) }
 ;
 
 letin:
-    | LET VAR EQUAL expr IN                 { Let (Var $2, $4, Const 0) }
-/*    | LET UNDERSCORE EQUAL expr IN        { Let_anon ($4, Const 0) } */
     | LET VAR EQUAL expr IN expr            { Let (Var $2, $4, $6) }
-/*    | LET UNDERSCORE EQUAL expr IN expr   { Let_anon ($4, $6) }
-    | LET VAR EQUAL func IN expr            { Let (Var $2, $4, $6) } */
+    | LET UNDERSCORE EQUAL expr IN expr     { Let_anon ($4, $6) }
+/*    | LET VAR EQUAL func IN expr            { Let (Var $2, $4, $6) } */
 ;
 
 condition:
+    | TRUE                                  { True }
+    | FALSE                                 { False }
     | expr EQUAL expr                       { Eq ($1, $3) }
     | expr NEQ expr                         { Neq ($1, $3) }
     | expr LEQ expr                         { Leq ($1, $3) }
