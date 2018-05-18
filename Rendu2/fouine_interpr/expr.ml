@@ -1,5 +1,7 @@
-(* un type pour des expressions arithmétiques simples *)
+(* We have two recursive types working together. *)
+
 type expr =
+    | Nil
     | Const of int
     | Var of string
     | Add of expr * expr
@@ -7,11 +9,11 @@ type expr =
     | Sub of expr * expr
     | Div of expr * expr
     | Let of expr * expr * expr
-    | Let_anon of expr * expr
     | Ite of cond * expr * expr
     | PrInt of expr
     | Semis of expr * expr
-    | Fun of string * expr
+    | Fun of expr * expr * expr
+    | Anon_fun of expr * expr
     | App of expr * expr
 
 and cond =
@@ -27,14 +29,13 @@ and cond =
     | Or of cond * cond
     | Not of cond
 
-(* fonction d'affichage *)
+let caps = ref false (* for the -shout option *)
 
-let caps = ref false
-let verbose = ref false
+(* display function for the debug mode *)
 
 let rec display_expr e =
     let aff_aux s ar =
-    (* I use a pair list here because the number of arguments varies between 1 and 3 and they can be either of type cond or of type expr *)
+    (* I use a pair of lists here because the number of arguments varies between 1 and 3 and they can be either of type cond or of type expr *)
         let rec give_args ar = match ar with
             | [],[]     ->  print_string ")"
             | [],[e]    ->  display_expr e; print_string ")"
@@ -63,6 +64,7 @@ let rec display_expr e =
         | Ite(cd,e1,e2) -> aff_aux (if !caps then "ITE(" else "Ite(") ([cd],[e1;e2])
         | _ -> ()
 
+(* exactly the same thing, but for conditions *)
 and display_cond cd =
     let aff_aux s ar =
         let rec give_args ar = match ar with

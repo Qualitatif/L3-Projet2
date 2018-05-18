@@ -1,3 +1,5 @@
+(* Not much to say in this file. Most comes from the core examples from the website. I only modified the function compile to implement debug mode as wished and added some more options. *)
+
 open Expr
 open Eval;;
 
@@ -26,8 +28,8 @@ let fonction_principale () =
      Voir la librairie "Arg" de Caml pour davantage de details *)
   let optlist = [
     ("-debug", Arg.Set verbose, " Activates light debug mode" );
-    ("-debug+", Arg.Set maxVerbose, " Activates full debug mode: prints the operations one by one at the moment they are executed" );
     ("-shout", Arg.Set caps, " Types operators in capitals in both debug modes");
+    ("-debug+", Arg.Set maxVerbose, " Activates full debug mode: prints the operations one by one at the moment they are executed" );
     ("-env", Arg.Set giveEnv, " Displays current environments in full debug mode [not yet functional]")
   ] in
   let usage = "Help menu for fouine:" in  (* message d'accueil *)

@@ -5,11 +5,12 @@ and env = (string * value) list
 and value = I of int | Cl of closure
 
 (* sémantique opérationnelle à grands pas *)
-let maxVerbose = ref false
-let toPrInt = ref false
-let giveEnv = ref false
+let verbose = ref false (* for the -debug option *)
+let maxVerbose = ref false (* for the -debug+ option *)
+let toPrInt = ref false (* for the "function" prInt *)
+let giveEnv = ref false (* for the (yet unfunctional) -env option *)
 
-let rec print_env ev = (* this option doesn't work yet *)
+let rec print_env ev = (* -env option, but it doesn't work yet *)
     match ev with
     | []         -> print_string "]\n"
     | [(vr,vl)]  -> (match vl with
@@ -25,12 +26,14 @@ let rec print_env ev = (* this option doesn't work yet *)
                                             print_env ev;
                                             print_string ");\n")
 
+(* I modified the following function from what I took on the website. This is for the purposes of implementing the -debug+ and -env options *)
 let p_verb s ev =   if !maxVerbose
                         then (if !giveEnv
                             then (Format.printf "%s in [" s; print_env ev)
                             else Format.printf "%s\n" s)
                     else ()
 
+(* Not much to say here. I just added additional operators to the list given on the website's examples. *)
 let rec eval ex ev = match ex with
     | Const k           -> k
     | Var v             -> (p_verb "Reading var" ev;
@@ -38,8 +41,8 @@ let rec eval ex ev = match ex with
                             (if String.compare (fst (List.hd ev)) v == 0
                                 then match snd (List.hd ev) with
                                     | I(x)  -> x
-                                    | _     -> 0 (* case to consider later on
-                                                    when there will be functions *)
+                                    | _     -> 0 (* Case to consider later on
+                                                    when there will be functions. I just added it so that I don't forget it and that there be a full pattern matching. *)
                                 else eval (Var v) (List.tl ev))
                         with _ -> failwith ("Unbound value " ^ v))
     | Add(e1,e2)        -> (p_verb "Adding" ev;
@@ -54,18 +57,19 @@ let rec eval ex ev = match ex with
                         let x = eval e ev in (print_int x; print_newline(); x))
     | Let(e1,e2,e3)     -> (p_verb "Declaring" ev;
                             match e1 with
+                                | Nil   -> let _ = eval e2 ev
+                                    in eval e3 ev
                                 | Var v -> let x = eval e2 ev
                                     in eval e3 ((v,I(x))::ev)
                                 | _     -> failwith "How did you trick the parser?!")
-                                    (* This case shouldn't happen *)
-    | Let_anon(e1,e2)   -> (p_verb "Anonymous declaration" ev;
-                            let _ = eval e1 ev in eval e2 ev)
+                                    (* Such a case should not be allowed by the parser *)
     | Ite(cd,e1,e2)     -> (p_verb "If Then Else" ev;
                             let cnd = (eval_cond cd ev) in if cnd
                                 then (eval e1 ev)
                                 else (eval e2 ev))
     | _ -> 0
 
+(* This is wholly new and follows exactly the same scheme as the previous function, except it works for conditions instead of expressions *)
 and eval_cond cd ev = match cd with
     | True -> true
     | False -> false

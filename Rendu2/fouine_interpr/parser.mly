@@ -55,20 +55,36 @@ top_level_expr: /* this matching assures that we cannot use semicolons anywhere 
 ;
 
 expr:
-    | VAR                                   { Var $1 }
-    | arith                                 { $1 }
     | PRINT expr                            { PrInt $2 }
-    | LPAREN expr RPAREN                    { $2 }
     | letin                                 { $1 }
     | IF condition THEN expr ELSE expr      { Ite ($2, $4, $6) }
-/*    | appexpr                             { $1 } */
-/*    | FUN VAR ARROW expr                  {  } */
+    | appexpr                               { $1 }
+/*    | func                                  { $1 }
 ;
-/*
-appexpr :
+/* brouillon */
+appexpr:
     | sexpr                                 { $1 }
-    | appexpr sexpr                         { App($1,$2) }
-; */
+/*    | appexpr sexpr                         { App ($1,$2) }
+;
+
+func:
+    | LET VAR EQUAL FUN VAR ARROW expr      { Fun (Var $2, Var $5, $7) }
+    | LET VAR args EQUAL expr               { let rec set_f ar e = match ar with
+                                                | [] -> e
+                                                | v::a -> Anon_fun (v, set_f a e)
+                                              in Fun (Var $2, List.hd $3, set_f (List.tl $3) $5) }
+;
+
+args:
+    | VAR                                   { [Var $1] }
+    | VAR args                              { (Var $1)::$2 }
+;
+/* re-propre */
+sexpr:
+    | VAR                                   { Var $1 }
+    | arith                                 { $1 }
+    | LPAREN expr RPAREN                    { $2 }
+;
 
 arith:
     | INT                                   { Const $1 }
@@ -80,23 +96,23 @@ arith:
 ;
 
 top_let:
-    | LET UNDERSCORE EQUAL expr             { Let_anon ($4, Const 0) }
-    | LET VAR EQUAL expr                    { Let (Var $2, $4, Const 0) }
+    | sub_let                               { Let (fst $1, snd $1, Const 0) }
     | lett                                  { $1 }
+;
 
 lett:
-    | LET VAR EQUAL expr lett               { Let (Var $2, $4, $5) }
-    | LET UNDERSCORE EQUAL expr lett        { Let_anon ($4, $5) }
-    | LET VAR EQUAL expr SEMICOLONS         { Let (Var $2, $4, Const 0) }
-    | LET UNDERSCORE EQUAL expr SEMICOLONS  { Let_anon ($4, Const 0) }
-    | LET VAR EQUAL expr SEMICOLONS top_level_expr  { Let (Var $2, $4, $6) }
-    | LET UNDERSCORE EQUAL expr SEMICOLONS top_level_expr   { Let_anon ($4, $6) }
+    | sub_let lett                          { Let (fst $1, snd $1, $2) }
+    | sub_let SEMICOLONS                    { Let (fst $1, snd $1, Const 0) }
+    | sub_let SEMICOLONS top_level_expr     { Let (fst $1, snd $1, $3) }
 ;
 
 letin:
-    | LET VAR EQUAL expr IN expr            { Let (Var $2, $4, $6) }
-    | LET UNDERSCORE EQUAL expr IN expr     { Let_anon ($4, $6) }
-/*    | LET VAR EQUAL func IN expr            { Let (Var $2, $4, $6) } */
+    | sub_let IN expr                       { Let (fst $1, snd $1, $3) }
+;
+
+sub_let:
+    | LET VAR EQUAL expr                    { (Var $2, $4) }
+    | LET UNDERSCORE EQUAL expr             { (Nil, $4) }
 ;
 
 condition:
@@ -113,15 +129,8 @@ condition:
     | condition AMPERSANDS condition        { And ($1, $3) }
 ;
 /*
-func:
-    | FUN VAR ARROW expr                    { Fun ($2, $4) }
-    | IF condition THEN func ELSE func      { Ite ($2, $4, $6) }
+anon_func:
+    | FUN VAR ARROW expr                            { Fun ($2, $4) }
+    | IF condition THEN anon_func ELSE anon_func    { Ite ($2, $4, $6) }
 ;
-
-sexpr:
-    | VAR                                   { Var $1 }
-    | INT                                   { Const $1 }
-    | LPAREN expr RPAREN                    { $2 }
-;
-
 */
