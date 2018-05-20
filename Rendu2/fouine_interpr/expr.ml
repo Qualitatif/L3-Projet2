@@ -11,9 +11,7 @@ type expr =
     | Let of expr * expr * expr
     | Ite of cond * expr * expr
     | PrInt of expr
-    | Semis of expr * expr
-    | Fun of expr * expr * expr
-    | Anon_fun of expr * expr
+    | Fun of expr * expr
     | App of expr * expr
 
 and cond =
@@ -28,6 +26,10 @@ and cond =
     | And of cond * cond
     | Or of cond * cond
     | Not of cond
+
+let rec set_f ar e = match ar with
+    | [] -> e
+    | v::a -> Fun (v, set_f a e)
 
 let caps = ref false (* for the -shout option *)
 
@@ -62,6 +64,8 @@ let rec display_expr e =
         | PrInt(e)      -> aff_aux (if !caps then "PRINT(" else "PrInt(") ([],[e])
         | Let(e1,e2,e3) -> aff_aux (if !caps then "LET(" else "Let(") ([],[e1;e2;e3])
         | Ite(cd,e1,e2) -> aff_aux (if !caps then "ITE(" else "Ite(") ([cd],[e1;e2])
+        | Fun(e1,e2)    -> aff_aux (if !caps then "FUN(" else "Fun(") ([],[e1;e2])
+        | App(e1,e2)    -> aff_aux (if !caps then "APP(" else "App(") ([],[e1;e2])
         | _ -> ()
 
 (* exactly the same thing, but for conditions *)

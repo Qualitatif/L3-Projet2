@@ -39,6 +39,9 @@ rule token = parse
     | "fun"                                     { FUN }
     | "->"                                      { ARROW }
     | "rec"                                     { REC }
+    | "match"                                   { MATCH }
+    | "with"                                    { WITH }
+    | '|'                                       { PIPE }
 
     | ['a'-'z']['a'-'z' 'A'-'Z' '0'-'9']* as s  { VAR s }
 
