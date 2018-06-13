@@ -8,7 +8,7 @@ Also I briefly had a hope to implement comparisons on refs and pairs (which is a
 
 However, these aren't `expr` but `value` thus I can't compare them using `eval_cond` recursively either and I would have been obligated to implement an auxiliary function to handle this. Given I'm currently doing an internship and I'm trying *not* to spend my whole time working on Projet2, this would have been unadvisable.
 
-[1] Actually this is doable in Caml, but if I implemented a direct comparison it would also be possible to compare e.g. `I 0` and `Id 0`, which is not advisable
+[1] Actually this is doable in Caml, but if I implemented a direct comparison it would also be possible to compare e.g. `I 0` and `Id 0`, which is not advisable.
 
 # Rendu 2
 
@@ -47,7 +47,7 @@ All combinations of writings work, using `fun` and `->` or not.
 * Implemented references. The number of memory slots has been arbitrarily set to 1000. It can be changed by modifying the value of `size` in *eval.ml*. Content can be either `int`, `'a -> 'b`, `'a * 'b`, `ref` or `exception`, though update isn't allowed in that last case (see the comment on *excn-ref.ml* for the explanation).
 * Fully implemented pairs.
 * Fully implemented exceptions. That frightened me at first but despite it requires to update most patterns in `eval` the updates are actually fairly simple. Thus it was more of a long work than a difficult one in the end.
-* Nota: in Rendu 3, `eval_cond` actually kept working without issue despite the fact it then worked on `value` instead of `int`. That is due to the fact that Caml automatically sets an order on types made of constructors on ordered types (e.g. I 0 < I 1).
+* Nota: in Rendu 3, `eval_cond` actually kept working without issue despite the fact it then worked on `value` instead of `int`. That is due to the fact that Caml automatically sets an order on types made of constructors on ordered types (e.g. `I 0 < I 1`).
 
 ## Encountered bugs
 
