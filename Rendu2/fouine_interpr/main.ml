@@ -1,7 +1,8 @@
 (* Not much to say in this file. Most comes from the core examples from the website. I only modified the function compile to implement debug mode as wished and added some more options. *)
 
-open Expr
-open Eval;;
+open Types
+open Eval
+open Display ;;
 
 let compile e =
     begin
@@ -9,7 +10,7 @@ let compile e =
         (* debug mode *)
             (display_expr e;
             print_newline());
-        eval e []
+        let _ = eval e [] in (); (* only typing `eval e []` gives "Warning 10: this expression should have type unit." on compilation *)
     end
 
 (* stdin désigne l'entrée standard (le clavier) *)
@@ -29,8 +30,7 @@ let fonction_principale () =
   let optlist = [
     ("-debug", Arg.Set verbose, " Activates light debug mode" );
     ("-shout", Arg.Set caps, " Types operators in capitals in both debug modes");
-    ("-debug+", Arg.Set maxVerbose, " Activates full debug mode: prints the operations one by one at the moment they are executed" );
-    ("-env", Arg.Set giveEnv, " Displays current environments in full debug mode [not yet functional]")
+    ("-debug+", Arg.Set maxVerbose, " Activates full debug mode: prints the operations one by one at the moment they are executed" )
   ] in
   let usage = "Help menu for fouine:" in  (* message d'accueil *)
   Arg.parse (* ci-dessous les 3 arguments de Arg.parse : *)

@@ -1,0 +1,74 @@
+\documentclass[12pt,a4paper]{report}
+\usepackage[francais]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{dvips,a4paper,margin=2cm}
+\author{Quentin de Goër de Herve}
+\title{Projet 2 --- Rapport Final}
+\date{}
+\makeindex
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents\addcontentsline{toc}{chapter}{Table des matières}
+
+\chapter*{Présentation}\addcontentsline{toc}{chapter}{Présentation}
+
+Voici le rendu final de mon travail pour Projet 2 durant ce semestre. N'étant pas très inspiré il sera probablement plus rébarbatif que passionnant. Pour me faire pardonner et puisque vous semblez apprécier ça, je vais essayer de l'écrire avec autant de sens de l'humour que je sais en faire preuve. D'ailleurs comme vous pourrez le constater, mon humour se teint souvent de cynisme et/ou d'auto-dérision, mais il me semble avoir compris que c'était aussi votre cas donc on devrait bien s'entendre, en tout cas je l'espère pour le bien de ma note (haha, on avait failli oublier qu'il s'agissait aussi de ça!).
+
+Mais revenons à nos moutons (noirs, puisque je suis complètement déphasé du reste du groupe) (comme mon humour) (noir je veux dire, pas déphasé) (quoique il est plutôt caustique et/ou sarcastique que noir dans ce rapport) (soit dit en passant, la remarque précédente amène à considérer la notion d'humour déphasé, notion qui me paraît pour le moins conceptuelle, mais bref, revenons à nos moutons noirs, donc). Ce travail a été tout à fait intéressant et m'aura fait découvrir pas mal de choses avec lesquelles je ne savais pas travailler jusque là (\emph{*tousse*} \verb?shift/reduce conflicts? \emph{*tousse*}).
+
+J'ai par ailleurs appris à faire des citations en \LaTeX , ce qui me sera probablement utile quand j'écrirai mon rapport de stage et que je voudrai citer d'autres articles que celui de Peter Landin \cite{DBLP:journals/cacm/Landin66} (soyons honnêtes, même si c'était probablement quelqu'un de tout à fait respectable je n'aurai probablement pas de raison de le citer dans mon rapport).
+
+Malheureusement, le lien hypertexte associé à ma citation pointe vers la page de titre et je n'ai aucune idée de l'origine du bug ni \emph{a fortiori} de comment le corriger (mais bon, ce n'est pas la première fois que mon ordinateur produit des choses mystérieuses, on se souviendra du \verb?make clean? qui n'a pas cessé d'être buggé).
+
+Sur ces mots, je vous laisse passer à la section suivante (en fait un \verb?chapitre*? mais peu importe), en espérant que vous ne vous ennuyez pas trop en me lisant (toutes mes excuses le cas échéant).
+
+\chapter*{Organisation du code}\addcontentsline{toc}{chapter}{Organisation du code}
+
+Mon code est scindé de la manière suivante :
+
+\begin{itemize}
+	\item \verb?parser.mly? et \verb?lexer.mll? font ce à quoi on s'attend
+	\item \verb?types.ml?, \verb?eval.ml? et \verb?display.ml? ont aussi des noms d'une clarté si incroyable qu'il me paraît assez superflu de détailler.
+	\item Enfin \verb?main.ml? rassemble le tout (incroyable mais vrai!).
+\end{itemize}
+
+\bigskip
+Et comme je doute d'avoir quoi que ce soit de plus intéressant à dire à ce sujet je m'arrêterai là en vous laissant avec cette magnifique page blanche. Je sais, c'est honteux ce gâchis de papier mais comme de toute manière je ne crois pas un instant que vous imprimerez mon rapport, ça n'a pas grande importance au final puisque ça ne fait guère qu'user de manière négligeable la molette de votre souris.
+
+\chapter*{Critique du travail}\addcontentsline{toc}{chapter}{Critique du travail}
+
+J'ai initialement effectué ce projet conjointement avec Jérémy Petithomme, avant que des difficultés personnelles ne conduisent à la scission du binôme et à l'établissement d'un projet en solitaire. Cela m'a considérablement simplifié la tâche en termes d'organisation et de structuration du code, puisque j'étais seul maître.
+
+En revanche, cela a eu l'inconvénient de ne pas m'offrir la possibilité de discuter du code et j'ai donc été obligé de chercher ailleurs pour avoir un regard extérieur, chose souvent très utile, surtout quand on est coincé sur un code qui ne marche pas et qu'on ne comprend pas pourquoi. Ailleurs, c'est l'alias de Sébastien Michelland que je remercie d'ailleurs énormément pour son soutien et ses remarques avisées.
+
+En termes de contenu, je n'ai malheureusement pas pu aller aussi loin seul que j'aurais pu le faire dans un binôme, et ce d'autant plus que mes problèmes personnels ne se sont pas cantonnés à deux semaines d'absence (eh non, c'eût été trop beau!) et qu'ils ont continué à interférer avec mon travail par la suite. Malgré cela et malgré un rendu 3 incomplet, je pense avoir fourni un travail aussi satisfaisant que les circonstances l'ont permis.
+
+Ayant peu de mesure de comparaison, il m'est difficile de critiquer les points forts et les points faibles de mon travail, mais je pense pouvoir prétendre que mon code est plutôt bien écrit, commenté et structuré (surtout dans le rendu 4) --- ce qui est un challenge (surtout dans le rendu 4) (bis). Et en plus j'ai un superbe \verb?Readme.md? plutôt qu'un \verb?Readme.txt?. Si ça ne me vaut pas au moins 21/20, je ne sais pas ce qu'il vous faut.
+
+Je concèderai néanmoins que j'utilise parfois des structures probablement un peu exotiques et/ou inutilement sophistiquées, comme le \verb?Nil? que vous avez l'air de trouver discutable --- mais il se justifie par la simplicité du typage pour la fonction d'affichage du mode \verb?-debug? que je n'ai pas à la modifier pour élargir le typage à autre chose que des \verb?expr?.
+
+Je vous assure que c'est un argument tout à fait légitime, en tout cas mon cerveau a collégialement décidé que c'était le cas et que de toute manière il n'avait pas le temps de corriger ça pour le rendu~4 sachant qu'il était déjà en retard et qu'il avait envie d'en finir au plus vite pour pouvoir se concentrer sur son stage. Chose qui a d'ailleurs remarquablement bien marché puisque je suis en train d'écrire le rapport que je vous ai envoyé ce week-end comme je le souhaitais, n'est-ce pas ?
+
+\chapter*{Conclusion...}\addcontentsline{toc}{chapter}{Conclusion}
+
+... Qui sert juste à dire que voilà, c'est tout, merci pour avoir été un bon professeur même si à certains moments je vous ai détesté parce que j'avais largement assez de préoccupations et que j'aurais été ravi de ne pas avoir à m'occuper de Projet~2, et navré de ne pas savoir quoi vous raconter de passionnant alors qu'on m'a soufflé dans l'oreillette qu'Antonin et Alain vous ont écrit un superbe récit de leurs aventures. Navré, vraiment.
+
+P.S. : Au cas où vous auriez oublié le contenu de la table des matières et où vous n'auriez pas cliqué sur le lien tout à l'heure, sachez que vous pouvez continuer de scroller et trouver ma bibliographie incroyablement complète en page suivante.
+
+P.P.S. : Je ne vous souhaite pas à l'année prochaine parce que j'espère bien que ma demande de césure sera acceptée, mais je peux probablement vous dire à dans deux ans.
+
+P.P.P.S. : Non rien en fait, j'avais juste envie de rajouter un $(P.)^{n}S.\text{ }n \in \mathbb{N}$ supplémentaire (naturellement nous travaillons sur le monoïde libre $(\{P,.,S\}^*,\cdot)$ et la notation puissance est donc tout à fait valable) (mes excuses pour la déformation professionnelle de stagiaire travaillant sur des automates).
+
+\bibliographystyle{plain}
+\bibliography{Landin66}\addcontentsline{toc}{chapter}{Bibliographie}
+
+\end{document}

@@ -10,7 +10,7 @@ rule token = parse
     | '*'                                       { TIMES }
     | '-'                                       { MINUS }
     | '/'										{ SLASH }
-    | '('                                       { LPAREN }
+    | '('                                        { LPAREN }
     | ')'                                       { RPAREN }
     | ['0'-'9']+ as s                           { INT (int_of_string s) }
 
@@ -42,6 +42,19 @@ rule token = parse
     | "match"                                   { MATCH }
     | "with"                                    { WITH }
     | '|'                                       { PIPE }
+
+    | ';'                                       { SEMICOLON }
+    | "ref"                                     { REF }
+    | ":="                                      { COLONEQ }
+    | '!'                                       { BANG }
+
+    | ','                                       { COMMA }
+    | "fst"                                     { FST }
+    | "snd"                                     { SND }
+
+    | 'E'                                       { E }
+    | "raise"                                   { RAISE }
+    | "try"                                     { TRY }
 
     | ['a'-'z']['a'-'z' 'A'-'Z' '0'-'9']* as s  { VAR s }
 
